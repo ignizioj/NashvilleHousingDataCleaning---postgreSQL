@@ -1,0 +1,136 @@
+select * from nashville_housing2
+--standardize the date format for all columns
+
+select cast("SaleDate" as Date) 
+from nashville_housing2
+
+update nashville_housing2
+set "SaleDate" = cast("SaleDate" as Date)
+
+
+
+--Populate the NUll property addresses
+
+select t1."ParcelID", t1."PropertyAddress",t2."ParcelID", t2."PropertyAddress", coalesce(t2."PropertyAddress") 
+from nashville_housing2 t1 
+JOIN nashville_housing2 t2
+ON t1."ParcelID" = t2."ParcelID" 
+where  t1."UniqueID " != t2."UniqueID "
+AND t1."PropertyAddress" is null
+
+
+UPDATE nashville_housing2 AS t1 
+SET "PropertyAddress" = t2."PropertyAddress"
+FROM nashville_housing2 AS t2
+where  t1."UniqueID " != t2."UniqueID "
+AND t1."PropertyAddress" is null
+
+--Breaking up the address into Address, City, and State as seperate columns. State comes from the owner address 
+
+select "PropertyAddress" 
+from nashville_housing2
+
+select 
+substring("PropertyAddress", 1, position(',' in "PropertyAddress")-1) AS "Address",
+substring("PropertyAddress",(position(',' in "PropertyAddress")+1), length("PropertyAddress")) AS "City"
+from nashville_housing2
+
+    --perm changes to the table
+Alter Table nashville_housing2
+add StreetAddress VARCHAR(255)
+
+update nashville_housing2
+set StreetAddress = substring("PropertyAddress", 1, position(',' in "PropertyAddress")-1) 
+
+Alter Table nashville_housing2
+add City VARCHAR(255)
+
+update nashville_housing2
+set City = substring("PropertyAddress",(position(',' in "PropertyAddress")+1), length("PropertyAddress"))
+
+
+
+    --city
+
+select "OwnerAddress" 
+from nashville_housing2
+
+select split_part("OwnerAddress", ',', 1),
+       split_part("OwnerAddress", ',', 2),
+       split_part("OwnerAddress", ',', 3)
+from nashville_housing2
+
+    --perm changes for Owner
+Alter Table nashville_housing2
+add OwnerStreetAddress VARCHAR(255)
+
+update nashville_housing2
+set OwnerStreetAddress = split_part("OwnerAddress", ',', 1)
+
+Alter Table nashville_housing2
+add OwnerCity VARCHAR(255)
+
+update nashville_housing2
+set OwnerCity = split_part("OwnerAddress", ',', 2)
+
+Alter Table nashville_housing2
+add OwnerState VARCHAR(255)
+
+update nashville_housing2
+set OwnerState = split_part("OwnerAddress", ',', 3)
+
+--Make sure all date in "SoldAsVacant" is ether in Yes or No format
+
+select distinct "SoldAsVacant", count("SoldAsVacant")
+from nashville_housing2
+group by "SoldAsVacant"
+order by 2
+
+Select "SoldAsVacant",
+case when "SoldAsVacant" = 'Y' THEN'Yes'
+     when "SoldAsVacant" = 'N' THEN'No'
+     else "SoldAsVacant"
+     END
+from nashville_housing2
+
+    --perm changes
+update nashville_housing2
+set "SoldAsVacant" = case when "SoldAsVacant" = 'Y' THEN'Yes'
+                          when "SoldAsVacant" = 'N' THEN'No'
+                          else "SoldAsVacant"
+                     END
+                     
+--Delete Duplicates with a CTE (but done with subquery in postgres)
+with RowNumCTE as (
+Select *,
+    Row_Number()over(
+    partition by "ParcelID",
+                 "PropertyAddress",
+                 "SalePrice",
+                 "SaleDate",
+                 "LegalReference"
+                 ORDER BY "UniqueID "
+                    ) as row_num
+    
+from nashville_housing2
+
+)
+DELETE 
+from nashville_housing2
+where "UniqueID " in (select "UniqueID " from RowNumCTE where row_num > 1)
+
+--Delete unused columns
+
+select * 
+from nashville_housing2
+
+Alter Table nashville_housing2
+DROP Column "OwnerAddress" 
+
+Alter Table nashville_housing2
+DROP Column "TaxDistrict"
+
+Alter Table nashville_housing2
+DROP Column "PropertyAddress"
+
+select * from nashville_housing2
