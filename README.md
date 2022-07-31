@@ -1,4 +1,4 @@
-### Nashville Housing Market Dataset Cleaned in PostgreSQL
+# Nashville Housing Market Dataset Cleaned in PostgreSQL
 #### This project idea was to showcase my ability to clean and manipulate data for better usage. I really enjoy SQL and doing interesting things with it. I did not actually do anything further with this cleaned data, but certainly could analyze to answer questions one may have.  An interactive dashboard may be a great addtion to this project to filter the data based on certain questions.  
 
 
