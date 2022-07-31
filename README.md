@@ -1,16 +1,8 @@
-Title
-Description
-table of contents
-how to install and run project
-how to use the project
-include credits, collabs
-license
+### Nashville Housing Market Dataset Cleaned in PostgreSQL
+#### This project idea was to showcase my ability to clean and manipulate data for better usage. I really enjoy SQL and doing interesting things with it. I did not actually do anything further with this cleaned data, but certainly could analyze to answer questions one may have.
+
+- 🔭 I’m currently working on this page. 
 
 
 
 
-
-
-
-# NashvilleHousingDataCleaning---postgreSQL
-In this project, I show my ability to clean large data sets with PostgreSQL.
