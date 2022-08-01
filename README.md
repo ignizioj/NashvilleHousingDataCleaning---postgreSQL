@@ -11,8 +11,7 @@
 
 ![ScreenShot](https://github.com/ignizioj/NashvilleHousingDataCleaning-PostgreSQL/blob/main/CleanedHousing.png)
 
-##### In addtion, I have included the PostgreSQL script in this repo for reference or information. Feel free to browse any files found in the repository.  The only contributer in this project was myself.  Thanks!
-
+##### In addtion, I have included the PostgreSQL script in this repo for reference or information. Feel free to browse any files found in the repository.  I was the only contributer in this project.  Thanks!
 
 
 
